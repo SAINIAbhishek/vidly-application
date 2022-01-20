@@ -1,4 +1,4 @@
-const { User } = require('../../../../modules/users/UsersModel');
+const { User } = require('../../../modules/users/UsersModel');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const mongoose = require('mongoose');
