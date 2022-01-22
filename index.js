@@ -1,5 +1,7 @@
 'use strict';
 
+require('express-async-errors');
+require('winston-mongodb');
 const express = require('express');
 const app = express();
 const helmet = require('helmet');
@@ -7,19 +9,33 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const error = require('./middelware/error');
-require('express-async-errors');
+const winston = require('winston');
 
-const Joi = require('joi');
-Joi.objectId = require('joi-objectid')(Joi);
+// logging
+winston.handleExceptions(
+    new winston.transports.Console({ colorize: true, prettyPrint: true }),
+    new winston.transports.File({ filename: 'uncaughtExceptions.log' })
+);
 
+process.on('unhandledRejection', (ex) => {
+    throw ex;
+});
+
+winston.add(winston.transports.File, { filename: 'logfile.log' });
+winston.add(winston.transports.MongoDB, {
+    db: 'mongodb://localhost/vidly',
+    level: 'info'
+});
+
+// configuration
 const config = require('config');
 if (!config.get('jwtPrivateKey')) {
-    console.log('Fatal Error: Private key is not defined.');
-    process.exit(1);
+    throw new Error('Fatal Error: Private key is not defined.');
 }
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+// validation
+const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 
 app.use(helmet());
 app.use(morgan('tiny'));
@@ -53,9 +69,8 @@ const mongoParams = {
 }
 mongoose.connect('mongodb://localhost/vidly', mongoParams)
     .then(() => {
-        console.info('Connected to the MongoDB.');
-    })
-    .catch((err) => {
-        console.error('Could not connect to the MongoDB.');
-        process.exit(1);
-    })
+        winston.info('Connected to the MongoDB.');
+    });
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Listening on port ${port}...`));
