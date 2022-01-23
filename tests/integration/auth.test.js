@@ -1,4 +1,4 @@
-require('../../../ApiModels');
+require('../../ApiModels');
 const mongoose = require('mongoose');
 const Genre = mongoose.model('Genre');
 const User = mongoose.model('User');
@@ -11,7 +11,7 @@ describe('auth middleware', () => {
   let token;
 
   beforeEach(() => {
-    server = require('../../../index');
+    server = require('../../index');
     token = new User().generateAuthToken();
   });
 
