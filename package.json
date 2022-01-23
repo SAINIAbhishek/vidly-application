@@ -4,7 +4,8 @@
   "description": "Course project!",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll"
+    "test": "jest --watchAll --verbose",
+    "test:coverage": "jest --watchAll --verbose --coverage"
   },
   "keywords": [],
   "author": "Abhishek SAINI",
@@ -29,7 +30,8 @@
     "winston-mongodb": "^3.0.0"
   },
   "devDependencies": {
-    "jest": "^22.2.2"
+    "jest": "^22.2.2",
+    "supertest": "^3.0.0"
   },
   "jest": {
     "verbose": true,

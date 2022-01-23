@@ -67,10 +67,16 @@ const mongoParams = {
     useUnifiedTopology: true,
     useNewUrlParser: true
 }
-mongoose.connect('mongodb://localhost/vidly', mongoParams)
+/**
+ * to set env = test for integration testing.
+ * NODE_ENV=test nodemon index.js
+ */
+mongoose.connect(config.get('db'), mongoParams)
     .then(() => {
-        winston.info('Connected to the MongoDB.');
+        winston.info(`Connected to the ${config.get('db')}.`);
     });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+const server = app.listen(port, () => winston.log(`Listening on port ${port}...`));
+
+module.exports = server;
